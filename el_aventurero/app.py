@@ -585,9 +585,5 @@ class AplicacionJuego():
 
     def actualizarVidaJuego(self):
         self.lbVidaPj.configure(text=str(self.vidaPj))
-
-    def uselessFunction(self):
-        print("hola hola")
-        print ("hola que tal")
     
 app = AplicacionJuego()
