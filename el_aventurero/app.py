@@ -588,5 +588,6 @@ class AplicacionJuego():
 
     def uselessFunction(self):
         print("hola hola")
+        print ("hola que tal")
     
 app = AplicacionJuego()
