@@ -434,7 +434,7 @@ class AplicacionJuego():
 
         #vida pj
         self.lbNombrePjJuego = Label(self.canvasJuego, text=self.nombreJugador)
-        self.lbNombrePjJuego.grid(row=0, column=0)
+        self.lbNombrePjJuego.grid(row=0, column=0, columnspan=2)
 
         self.progressBarVidaPj = ttk.Progressbar(self.canvasJuego, length=200)
         self.progressBarVidaPj.grid(row=1, column=0)
@@ -444,19 +444,39 @@ class AplicacionJuego():
         self.lbVidaPjJuego = Label(self.canvasJuego, text=self.vidaPjText)
         self.lbVidaPjJuego.grid(row=2, column=0)
 
-        #label vida enemigo
-        self.vidaEnemigoText = StringVar()
-        self.lbVidaEnemigoJuego = Label(self.canvasJuego, text=self.vidaEnemigoText)
-        self.lbVidaEnemigoJuego.grid(row=2, column=1)
+        #armadura pj
+        self.armaduraTempPj = self.armPj
+        self.progressBarArmaduraPj = ttk.Progressbar(self.canvasJuego, length=200)
+        self.progressBarArmaduraPj.grid(row=3, column=0)
+
+        #label armadura pj
+        self.armPjText = StringVar()
+        self.lbArmaduraPjJuego = Label(self.canvasJuego, text=self.armPjText)
+        self.lbArmaduraPjJuego.grid(row=4, column=0)
 
         #vida enemigo
         lbnombreenemigo = Label(self.canvasJuego, text="Enemigo").grid(row=0, column=1)
         self.progressBarVidaEnemgio = ttk.Progressbar(self.canvasJuego, length=200)
         self.progressBarVidaEnemgio.grid(row=1, column=1)
 
+        #label vida enemigo
+        self.vidaEnemigoText = StringVar()
+        self.lbVidaEnemigoJuego = Label(self.canvasJuego, text=self.vidaEnemigoText)
+        self.lbVidaEnemigoJuego.grid(row=2, column=1)
+
+        #armadura enemigo
+        self.armaduraTempEnemigo = self.armaduraEnemigo
+        self.progressBarArmaduraEnemigo = ttk.Progressbar(self.canvasJuego, length=200)
+        self.progressBarArmaduraEnemigo.grid(row=3, column=1)
+
+        #label armadura enemigo
+        self.armaduraEnemigoText = StringVar()
+        self.lbArmaduraEnemigoJuego = Label(self.canvasJuego, text=self.armaduraEnemigoText)
+        self.lbArmaduraEnemigoJuego.grid(row=4, column=1)
+
         #opciones de juego (ppt)
         self.canvasOpciones = Canvas(self.canvasJuego)
-        self.canvasOpciones.grid(row=3, column=0, columnspan=2, padx=self.PAD, pady=self.PAD)
+        self.canvasOpciones.grid(row=5, column=0, columnspan=2, padx=self.PAD, pady=self.PAD)
 
         self.opcion = StringVar()
 
@@ -489,12 +509,13 @@ class AplicacionJuego():
         self.treeResultados.tag_configure(self.GANADOR, background=self.VERDE)
         self.treeResultados.tag_configure(self.PERDEDOR, background=self.ROJO)
 
-        self.treeResultados.grid(row=4, column=0, columnspan=2, padx=self.PAD, pady=self.PAD)
+        self.treeResultados.grid(row=6, column=0, columnspan=2, padx=self.PAD, pady=self.PAD)
 
         self.canvasJuego.grid(row=0, column=0)
-        self.actualizarBarrasVida()
+        self.actualizarBarras()
     
-    def actualizarBarrasVida(self):
+    def actualizarBarras(self):
+        #vida
         self.progressBarVidaPj["value"] = self.numToPercentage(self.vidaPj, self.vidaMaxPj)
         self.progressBarVidaEnemgio["value"] = self.numToPercentage(self.vidaEnemigo, self.vidaEnemigoMax)
 
@@ -503,6 +524,16 @@ class AplicacionJuego():
 
         self.lbVidaPjJuego.configure(text=self.vidaPjText)
         self.lbVidaEnemigoJuego.configure(text=self.vidaEnemigoText)
+
+        #armadura
+        self.progressBarArmaduraPj["value"] = self.numToPercentage(self.armaduraTempPj, self.armPj)
+        self.progressBarArmaduraEnemigo["value"] = self.numToPercentage(self.armaduraTempEnemigo, self.armaduraEnemigo)
+
+        self.armPjText = "[ "+str(self.armaduraTempPj)+" / "+str(self.armPj)+" ]"
+        self.armaduraEnemigoText = "[ "+str(self.armaduraTempEnemigo)+" / "+str(self.armaduraEnemigo)+" ]"
+
+        self.lbArmaduraPjJuego.configure(text=self.armPjText)
+        self.lbArmaduraEnemigoJuego.configure(text=self.armaduraEnemigoText)
 
     def numToPercentage(self, num, max):
         return int(num*100/max)
@@ -541,14 +572,20 @@ class AplicacionJuego():
         elif self.opcion == self.PIEDRA and self.opcionEnemigo == self.TIJERA or self.opcion == self.PAPEL and self.opcionEnemigo == self.PIEDRA or self.opcion == self.TIJERA and self.opcionEnemigo == self.PAPEL:
         #gana pj
             self.treeResultados.insert("", 0, values=(self.GANADOR, self.opcion, self.opcionEnemigo), tags=(self.GANADOR, ))
-            self.vidaEnemigo -= self.dmgPj
-            self.actualizarBarrasVida()
+            if self.armaduraTempEnemigo > 0:
+                self.armaduraTempEnemigo -= self.dmgPj
+            else:
+                self.vidaEnemigo -= self.dmgPj
+            
         elif self.opcion == self.PIEDRA and self.opcionEnemigo == self.PAPEL or self.opcion == self.PAPEL and self.opcionEnemigo == self.TIJERA or self.opcion == self.TIJERA and self.opcionEnemigo == self.PIEDRA:
         #gana enemigo
             self.treeResultados.insert("", 0, values=(self.PERDEDOR, self.opcion, self.opcionEnemigo), tags=(self.PERDEDOR, ))
-            self.vidaPj -= self.dmgEnemigo
-            self.actualizarBarrasVida()
-        
+            if self.armaduraTempPj > 0:
+                self.armaduraTempPj -= self.dmgEnemigo
+            else:
+                self.vidaPj -= self.dmgEnemigo
+            
+        self.actualizarBarras()
         self.btnPiedra["state"]=ACTIVE
         self.btnPapel["state"]=ACTIVE
         self.btnTijera["state"]=ACTIVE
@@ -585,5 +622,7 @@ class AplicacionJuego():
 
     def actualizarVidaJuego(self):
         self.lbVidaPj.configure(text=str(self.vidaPj))
+        self.armPj = self.armaduraTempPj
+        self.lbArmPj.configure(text=str(self.armPj))
     
 app = AplicacionJuego()
