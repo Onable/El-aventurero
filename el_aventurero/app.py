@@ -7,8 +7,6 @@ from random import randint
 from sqlite3 import IntegrityError
 import traceback
 
-from numpy import pad
-
 from gestionDB import GestionDB
 
 class AplicacionJuego():
@@ -37,7 +35,7 @@ class AplicacionJuego():
         #datos calculados con el nivel del enemigo
         self.vidaEnemigoMax = 10
         self.vidaEnemigo = 10
-        self.armaduraEnemigo = 0
+        self.armaduraEnemigo = 1
         self.dmgEnemigo = 5
 
         #rotaciones de objetos
@@ -96,7 +94,7 @@ class AplicacionJuego():
     def jugar(self):
         #cargar los datos de la partida con el nombre del combobox
         if self.cbPartidas.get()!="":
-            self.nombreJugador = self.cbPartidas.get()
+            self.nombreJugador = self.cbPartidas.get()  
             self.crearVentanaJuego()
         else:
             messagebox.showwarning("Error", "Selecciona una partida.")
@@ -108,7 +106,7 @@ class AplicacionJuego():
                 if(messagebox.askyesno("Confirmación", "¿Quieres que el nombre sea ["+name+"] ?")):
                     self.gestor.partidaNueva(name)
                     
-                    self.nombreJugador.set(str(name))
+                    self.nombreJugador.set(name)
                     self.nombre.set("")
                     #abrir la ventana de juego
                     self.crearVentanaJuego()
@@ -124,8 +122,6 @@ class AplicacionJuego():
     def crearVentanaJuego(self):
         self.ventana = Toplevel()
         self.canvas = Canvas(self.ventana, bg=self.ROJO)
-
-        self.cargarDatos()
 
         #nombrePJ
         self.lbJugador = Label(self.canvas, text=self.nombreJugador)
@@ -251,10 +247,13 @@ class AplicacionJuego():
 
         self.notebook.grid(row=1, column=4, columnspan=3, rowspan= 3)
         self.canvas.pack()
+
+        self.cargarDatos()
         self.actualizarImagenes()
     
     def cargarDatos(self):
-        datos = self.gestor.recogerDatos()
+        datos = self.gestor.recogerDatos(str(self.nombreJugador))
+        print(datos)
         for d in datos:
             self.nombreJugador = d[0]
             self.vidaMaxPj = d[1]
@@ -394,7 +393,8 @@ class AplicacionJuego():
         self.siguienteRotacion()
     
     def guardar(self):
-        datos = [self.vidaMaxPj, 
+        datos = [
+            self.vidaMaxPj, 
             self.vidaPj,
             self.armPj,
             self.dmgPj,
@@ -408,9 +408,10 @@ class AplicacionJuego():
             self.aumento_armadura,
             self.imgCascoPj,
             self.imgArmaduraPj,
-            self.imgArmaPj
+            self.imgArmaPj,
+            self.nombreJugador
         ]
-        print (datos)
+        print(datos)
         self.gestor.guardarPartida(datos)
 
     def actualizarImagenes(self):

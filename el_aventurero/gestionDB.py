@@ -35,18 +35,11 @@ class GestionDB:
     def partidaNueva(self, nombre):
         con = self.abrir()
         cursor = con.cursor()
-        datos = [nombre,25,25,0,5,1,2,2,2,5,5,10,10,"el_aventurero/img/casco1.png","el_aventurero/img/armadura1.png","el_aventurero/img/arma1.png"]
+        datos = [nombre,25,25,1,5,1,2,2,2,5,5,10,10,"el_aventurero/img/casco1.png","el_aventurero/img/armadura1.png","el_aventurero/img/arma1.png"]
         sql = "INSERT INTO data (nombre, stat_vida_max, stat_vida, stat_arm, stat_dmg, enemy_lvl, rotacion_arma, rotacion_casco, rotacion_armadura, aumento_dmg, aumento_casco, aumento_armadura, aumento_vida, img_casco, img_armadura, img_arma) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"
         cursor.execute(sql, datos)
         con.commit()
         con.close()
-    
-    def recogerDatos(self):
-        con = self.abrir()
-        cursor = con.cursor()
-        sql = "SELECT * FROM data WHERE nombre='juan'"
-        cursor.execute(sql)
-        return cursor.fetchall()
     
     def recogerNombres(self):
         con = self.abrir()
@@ -55,10 +48,17 @@ class GestionDB:
         cursor.execute(sql)
         return cursor.fetchall()
     
+    def recogerDatos(self, nombre):
+        con = self.abrir()
+        cursor = con.cursor()
+        sql = "SELECT * FROM data WHERE nombre=?"
+        cursor.execute(sql, (nombre, ))
+        return cursor.fetchall()
+    
     def guardarPartida(self, datos):
         con = self.abrir()
         cursor = con.cursor()
-        sql = "UPDATE data SET stat_vida_max=?, stat_vida=?, stat_arm=?, stat_dmg=?, enemy_lvl=?, rotacion_arma=?, rotacion_casco=?, rotacion_armadura=?, aumento_dmg=?, aumento_casco=?, aumento_armadura=?, aumento_vida=?, img_casco=?, img_armadura=?, img_arma=? WHERE nombre='juan'"
+        sql = "UPDATE data SET stat_vida_max=?, stat_vida=?, stat_arm=?, stat_dmg=?, enemy_lvl=?, rotacion_arma=?, rotacion_casco=?, rotacion_armadura=?, aumento_dmg=?, aumento_casco=?, aumento_armadura=?, aumento_vida=?, img_casco=?, img_armadura=?, img_arma=? WHERE nombre=?"
         cursor.execute(sql, datos)
         con.commit()
         con.close()
